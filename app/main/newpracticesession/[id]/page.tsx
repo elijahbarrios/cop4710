@@ -25,6 +25,7 @@ async function getEntryData({
             id: true,
             compositions: true,
             practiceGroups: true,
+            duration: true
         },
     });
 
@@ -127,7 +128,7 @@ export default async function DynamicRoute({
                             </div>
                             <div className="field">
                                 <div className="control">
-                                    <input type="text" name="duration" className="input" placeholder="Duration (in minutes)" />
+                                    <input type="text" name="duration" className="input" placeholder="Duration (in minutes)" defaultValue={data?.duration} />
                                 </div>
                             </div>
                             {compositions.length > 0 && (
