@@ -30,6 +30,7 @@ model PracticeSession {
   userId         String?
   compositions   Composition[]
   practiceGroups PracticeGroup[]
+  duration       String
 }
 
 model Composition {

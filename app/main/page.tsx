@@ -2,6 +2,7 @@ import Link from "next/link";
 import prisma from "../lib/db";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { revalidatePath, unstable_noStore } from "next/cache";
+import { useState } from "react";
 
 async function getPracticeSessions(userId: string) {
     unstable_noStore();
@@ -68,6 +69,12 @@ export default async function MainPage() {
         revalidatePath("/main");
     }
 
+    // const [search, setSearch] = useState("");
+
+    // function handleSearch(e) {
+    //     setSearch(e.target.value)
+    // }
+
     return (
         <div className="columns">
             <div className="column">
@@ -76,6 +83,19 @@ export default async function MainPage() {
                         Create a new practice session entry
                     </Link>
                 </button>
+                {/* <form action="">
+                    <div className="field">
+                        <div className="control">
+                            <input
+                                className="input"
+                                type="text"
+                                placeholder="Search notes"
+                                value={search}
+                                onChange={handleSearch}
+                            />
+                        </div>
+                    </div>
+                </form> */}
                 <div className="columns is-vcentered is-multiline">
                     {practiceSessions.length > 0 && (
                         <>
@@ -88,6 +108,8 @@ export default async function MainPage() {
                                         <div className="card-content">
                                             <div className="content">
                                                 {practiceSession.content}
+                                                <br />
+                                                {practiceSession.duration} minutes
                                                 <br />
                                                 {new Intl.DateTimeFormat(
                                                     "en-us",
@@ -104,10 +126,7 @@ export default async function MainPage() {
                                                 {practiceSession?.compositions.map(
                                                     (composition) => (
                                                         <span className="tag">
-                                                            {
-                                                                composition.name
-                                                            }{" "}
-                                                            -{" "}
+                                                            {composition.name} -{" "}
                                                             {
                                                                 composition.composer
                                                             }
@@ -135,9 +154,7 @@ export default async function MainPage() {
                                                 <input
                                                     type="hidden"
                                                     name="entryId"
-                                                    value={
-                                                        practiceSession.id
-                                                    }
+                                                    value={practiceSession.id}
                                                 />
                                                 <button className="button">
                                                     Delete
@@ -179,9 +196,7 @@ export default async function MainPage() {
                                         </div>
                                         <div className="card-footer">
                                             <form
-                                                action={
-                                                    deleteCompositionEntry
-                                                }
+                                                action={deleteCompositionEntry}
                                                 className="card-footer-item"
                                             >
                                                 <input
