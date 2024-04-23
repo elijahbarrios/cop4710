@@ -33,11 +33,77 @@ async function getCompositions(userId: string) {
     return data;
 }
 
+async function getTotalPracticeDay(userId: string, startDay: string) {
+    unstable_noStore();
+
+    const data = await prisma.practiceSession.aggregate({
+        _sum: {
+            duration: true
+        },
+        where: {
+            AND: [
+                {userId: userId},
+                { createdAt: {
+                    gte: new Date(startDay),
+                    lte: new Date(startDay + 'T23:59:59'),
+                }}
+            ]
+        },
+    })
+
+    return data?._sum.duration;
+}
+
+async function getMostProductiveDayThisWeek(userId: string) {
+    unstable_noStore();
+
+    const lastweek = new Date();
+    lastweek.setDate(lastweek.getDate()-7)
+
+    const data = await prisma.practiceSession.groupBy({
+        by: ['createdAt'],
+        _sum: {
+            duration: true
+        },
+        where: {
+            AND: [
+                {userId: userId},
+                { createdAt: {
+                    gte: lastweek,
+                    lte: new Date()
+                }}
+            ]
+        }
+    })
+    
+    let maxTime = 0;
+    let maxDay = new Date();
+    
+    for(const day of data) {
+        const totalPracticeTime = day._sum.duration || 0
+        
+        if(totalPracticeTime > maxTime) {
+            maxTime = totalPracticeTime;
+            maxDay = day.createdAt
+        }
+    }
+    
+    return {
+        day: maxDay,
+        time: maxTime
+    };
+}
+
 export default async function MainPage() {
     const { getUser } = getKindeServerSession();
     const user = await getUser();
     const practiceSessions = await getPracticeSessions(user?.id as string);
     const compositions = await getCompositions(user?.id as string);
+
+    const today = new Date().toISOString().split('T')[0];
+    const totalPracticeToday = await getTotalPracticeDay(user?.id as string, today)
+
+    const mostProductiveDayThisWeek = await getMostProductiveDayThisWeek(user?.id as string)
 
     async function deletePracticeSessionEntry(formData: FormData) {
         "use server";
@@ -166,6 +232,20 @@ export default async function MainPage() {
                             ))}
                         </>
                     )}
+                </div>
+                <div className="card">
+                    <div className="card-content">
+                        <h1 className="title">Total time spent practicing today:</h1>
+                        <h2 className="subtitle">{totalPracticeToday} minutes</h2>
+                    </div>
+                </div>
+                <div className="card">
+                    <div className="card-content">
+                        <h1 className="title">Your most productive session this past week</h1>
+                        <h2 className="subtitle">
+                            {mostProductiveDayThisWeek.time} minutes on {mostProductiveDayThisWeek.day.toDateString()}.
+                        </h2>
+                    </div>
                 </div>
             </div>
             <div className="column">

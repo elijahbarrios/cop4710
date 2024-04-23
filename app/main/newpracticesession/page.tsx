@@ -21,7 +21,8 @@ export default async function NewEntryRoute() {
         const content = formData.get("content") as string;
         const compositions = formData.getAll("composition") as string[];
         const practiceGroups = formData.getAll("practiceGroup") as string[];
-        const duration = formData.get("duration") as string;
+        const duration = formData.get("duration");
+        const durationValue = duration ? parseInt(duration.toString(), 10) : 0
 
         await prisma.practiceSession.create({
             data: {
@@ -33,7 +34,7 @@ export default async function NewEntryRoute() {
                 practiceGroups: {
                     connect: practiceGroups.map((id) => ({ id }))
                 },
-                duration: duration
+                duration: durationValue
             },
         });
 
@@ -92,7 +93,7 @@ export default async function NewEntryRoute() {
                             </div>
                             <div className="field">
                                 <div className="control">
-                                    <input type="text" name="duration" className="input" placeholder="Duration (in minutes)" />
+                                    <input type="number" name="duration" className="input" placeholder="Duration (in minutes)" />
                                 </div>
                             </div>
                             {compositions.length > 0 && (
