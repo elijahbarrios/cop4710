@@ -18,18 +18,18 @@ model User {
   name             String?
   email            String            @unique
   practiceSessions PracticeSession[]
-  practiceGroups   PracticeGroup[]
   compositions     Composition[]
 }
 
 model PracticeSession {
-  id           String        @id @default(uuid())
-  content      String
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  User         User?         @relation(fields: [userId], references: [id])
-  userId       String?
-  compositions Composition[]
+  id             String          @id @default(uuid())
+  content        String
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  User           User?           @relation(fields: [userId], references: [id])
+  userId         String?
+  compositions   Composition[]
+  practiceGroups PracticeGroup[]
 }
 
 model Composition {
@@ -43,8 +43,8 @@ model Composition {
 }
 
 model PracticeGroup {
-  id          String @id @default(uuid())
-  name        String @unique
-  description String
-  Users       User[]
+  id               String            @id @default(uuid())
+  name             String            @unique
+  description      String
+  practiceSessions PracticeSession[]
 }

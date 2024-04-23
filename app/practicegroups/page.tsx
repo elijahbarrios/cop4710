@@ -8,7 +8,7 @@ async function getGlobalPracticeGroups() {
 
     const data = await prisma.practiceGroup.findMany({
         include: {
-            Users: true
+            practiceSessions: true
         }
     }) 
 
@@ -35,16 +35,16 @@ export default async function PracticeGroupsPage() {
                             {globalPracticeGroups.map((practiceGroup) => (
                                 <div className="column is-one-third" key={practiceGroup.id}>
                                     <div className="card">
-                                        <div className="card-content">
-                                            <h1 className="title">{practiceGroup.name}</h1>
-                                            <div className="content">
-                                                <p>{practiceGroup.description}</p>
-                                                <br />
-                                                {practiceGroup.Users.map((user) => (
-                                                    <span className="tag" key={user.id}>{user.name}</span>
-                                                ))}
+                                        <Link href={`practicegroups/${practiceGroup.id}`}>
+                                            <div className="card-content">
+                                                <h1 className="title">{practiceGroup.name}</h1>
+                                                <div className="content">
+                                                    <p>{practiceGroup.description}</p>
+                                                    <br />
+                                                    <p>{practiceGroup.practiceSessions.length} practice notes shared</p>
+                                                </div>
                                             </div>
-                                        </div>
+                                        </Link>
                                     </div>
                                 </div>
                             ))}

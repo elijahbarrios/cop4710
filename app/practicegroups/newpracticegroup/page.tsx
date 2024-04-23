@@ -27,9 +27,6 @@ export default async function NewEntryRoute() {
             data: {
                 name: formData.get("name") as string,
                 description: formData.get("description") as string,
-                Users: {
-                    connect: { id: user?.id }
-                },
             },
         });
 
